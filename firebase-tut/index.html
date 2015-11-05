@@ -1,0 +1,44 @@
+<html>
+  <head>
+  	<!-- Include Firebase API -->
+    <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+  </head>
+  <body>
+    <div id='messagesDiv'></div>
+    <input type='text' id='nameInput' placeholder='Name'>
+    <input type='text' id='messageInput' placeholder='Message'>
+    <script>
+    	// assign db ref to firebase live demo
+    	var myDataRef = new Firebase('https://y5iij48dafz.firebaseio-demo.com/');
+      	
+      	// on click event for messageInput
+      	$('#messageInput').keypress(function (e) {
+        	if (e.keyCode == 13) {
+        		// get values for name and message
+        		var name = $('#nameInput').val();
+          		var text = $('#messageInput').val();
+          		// push the values to the db
+          		myDataRef.push({
+          			name: name, 
+          			text: text
+          		});
+          		//clear the message value
+          		$('#messageInput').val('');
+        	}
+      	});
+		
+		// when a val is added to the db, 
+		// take snapshot of val and display as message      
+     	myDataRef.on('child_added', function(snapshot) {
+      		var message = snapshot.val();
+        	displayChatMessage(message.name, message.text);
+      });
+
+      	function displayChatMessage(name, text) {
+        	$('<div/>').text(text).prepend($('<em/>').text(name+': ')).appendTo($('#messagesDiv'));
+        	$('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+      };
+    </script>
+  </body>
+</html>
